@@ -3,6 +3,7 @@ package ru.skypro.homework.service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.entity.UserEntity;
 
 /**
  * Интерфейс для управления пользователями с расширенными возможностями.
@@ -32,5 +33,5 @@ public interface CustomUserDetailsManager {
      * @return Данные пользователя.
      * @throws UsernameNotFoundException Если пользователь не найден.
      */
-    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+    UserEntity loadUserByUsername(String username) throws UsernameNotFoundException;
 }

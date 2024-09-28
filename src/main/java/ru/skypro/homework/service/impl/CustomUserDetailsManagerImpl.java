@@ -8,9 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
-import ru.skypro.homework.entity.AuthorityEntity;
 import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.repository.AuthorityRepository;
 import ru.skypro.homework.repository.UserEntityRepository;
 import ru.skypro.homework.service.CustomUserDetailsManager;
 
@@ -23,7 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomUserDetailsManagerImpl implements CustomUserDetailsManager {
     private final UserEntityRepository userEntityRepository;
-    private final AuthorityRepository authorityRepository;
 
     @Override
     public void createUser(UserDetails user, Register register) {
@@ -32,13 +29,6 @@ public class CustomUserDetailsManagerImpl implements CustomUserDetailsManager {
         userEntity.setPassword(user.getPassword());
         userEntity.setEnabled(user.isEnabled());
         userEntityRepository.save(userEntity);
-
-        user.getAuthorities().forEach(authority -> {
-            AuthorityEntity authorityEntity = new AuthorityEntity();
-            authorityEntity.setUsername(user.getUsername());
-            authorityEntity.setAuthority(authority.getAuthority());
-            authorityRepository.save(authorityEntity);
-        });
     }
 
     @Override
@@ -47,22 +37,12 @@ public class CustomUserDetailsManagerImpl implements CustomUserDetailsManager {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserEntity loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userEntityRepository.findByUsername(username);
-        if(Objects.isNull(userEntity)){
+        if (Objects.isNull(userEntity)) {
             throw new UsernameNotFoundException("User not found: " + username);
 
         }
-
-        List<AuthorityEntity>  authorityEntities = authorityRepository.findAllById(Collections.singleton(username));
-        List<GrantedAuthority> authorities = authorityEntities.stream()
-                .map(authorityEntity -> new SimpleGrantedAuthority(authorityEntity.getAuthority()))
-                .collect(Collectors.toList());
-
-        return User.builder()
-                .username(userEntity.getUsername())
-                .password(userEntity.getPassword())
-                .authorities(authorities)
-                .build();
+        return userEntityRepository.findByUsername(username);
     }
 }

@@ -2,10 +2,10 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.CustomUserDetailsManager;
 
@@ -21,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
         if (!manager.userExists(userName)) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
+        UserEntity userDetails = manager.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
     }
 
@@ -39,5 +39,4 @@ public class AuthServiceImpl implements AuthService {
                         .build(), register);
         return true;
     }
-
 }
